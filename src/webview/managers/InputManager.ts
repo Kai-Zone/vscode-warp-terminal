@@ -388,7 +388,11 @@ export class InputManager extends BaseManager implements IInputManager {
 
     const shouldIgnoreActivationTarget = (event: MouseEvent | PointerEvent): boolean => {
       const target = event.target as HTMLElement | null;
-      return Boolean(target?.closest('.terminal-control') || target?.closest('.terminal-header'));
+      return Boolean(
+        target?.closest('.terminal-control') ||
+        target?.closest('.terminal-header') ||
+        target?.closest('.warp-input-bar')
+      );
     };
 
     const pointerDownHandler = (event: PointerEvent): void => {
@@ -402,7 +406,11 @@ export class InputManager extends BaseManager implements IInputManager {
 
       // Ensure activation even when click is suppressed by canvas/selection behavior
       manager.setActiveTerminalId(terminalId);
-      terminal.focus();
+      if (this.coordinator.warpInputBarManager?.hasInputBar(terminalId)) {
+        this.coordinator.warpInputBarManager.focusInput(terminalId);
+      } else {
+        terminal.focus();
+      }
     };
 
     const clickHandler = (event: MouseEvent): void => {
@@ -414,7 +422,11 @@ export class InputManager extends BaseManager implements IInputManager {
       if (!event.altKey) {
         this.logger(`Regular click on terminal ${terminalId}`);
         manager.setActiveTerminalId(terminalId);
-        terminal.focus(); // Ensure terminal gets focus for keyboard input
+        if (this.coordinator.warpInputBarManager?.hasInputBar(terminalId)) {
+          this.coordinator.warpInputBarManager.focusInput(terminalId);
+        } else {
+          terminal.focus(); // Ensure terminal gets focus for keyboard input
+        }
         this.emitTerminalInteractionEvent('focus', terminalId, undefined, manager);
         return;
       }

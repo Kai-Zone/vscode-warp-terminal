@@ -64,9 +64,16 @@ export class PerformanceManager extends BaseManager {
     if (shouldFlushImmediately) {
       this.flushEntry(targetTerminal, entry);
 
-      // xterm.js automatically preserves scroll position if user has scrolled up
+      const shouldScroll = this.isTerminalAtBottom(targetTerminal);
       try {
         targetTerminal.write(normalizedData);
+        if (shouldScroll) {
+          try {
+            targetTerminal.scrollToBottom();
+          } catch {
+            // 忽略滚动异常
+          }
+        }
       } catch (error) {
         if (this.debugLoggingEnabled) {
           this.logger(`Error during immediate write: ${error}`);
@@ -104,7 +111,7 @@ export class PerformanceManager extends BaseManager {
   private getOrCreateBufferEntry(terminal: Terminal): BufferEntry {
     let entry = this.bufferEntries.get(terminal);
     if (!entry) {
-      entry = { data: [], timer: null, timerType: null };
+      entry = { data: [], timer: null, timerType: null, fallbackTimer: null };
       this.bufferEntries.set(terminal, entry);
     }
     return entry;
@@ -117,7 +124,7 @@ export class PerformanceManager extends BaseManager {
       const useRAF = !this.isCliAgentMode;
 
       if (useRAF) {
-        // requestAnimationFrame syncs with display refresh (typically ~16ms at 60Hz)
+        // requestAnimationFrame 与显示器刷新同步
         entry.timer = requestAnimationFrame(() => {
           try {
             this.flushEntryByTerminal(terminal);
@@ -131,11 +138,26 @@ export class PerformanceManager extends BaseManager {
             if (currentEntry) {
               currentEntry.timer = null;
               currentEntry.timerType = null;
+              currentEntry.fallbackTimer = null;
               currentEntry.data.length = 0;
             }
           }
         });
         entry.timerType = 'raf';
+
+        // 🛡️ 保护机制：侧边栏 Webview 或非激活状态下，Chromium 会对 rAF 进行节流（降至 1fps 甚至挂起）。
+        // 添加 16ms 兜底定时器，若 rAF 未能及时执行，则强制刷出缓冲区，彻底根除输出延迟与卡顿
+        entry.fallbackTimer = window.setTimeout(() => {
+          if (entry.data.length > 0) {
+            try {
+              this.flushEntryByTerminal(terminal);
+            } catch (error) {
+              if (this.debugLoggingEnabled) {
+                this.logger(`Error during fallback buffer flush: ${error}`);
+              }
+            }
+          }
+        }, 16);
       } else {
         // CLI Agent mode: use setTimeout with fast interval for lower latency
         const flushInterval =
@@ -186,10 +208,19 @@ export class PerformanceManager extends BaseManager {
     const bufferedData = entry.data.join('');
     entry.data.length = 0;
 
+    const shouldScroll = this.isTerminalAtBottom(terminal);
+
     try {
       terminal.write(bufferedData);
+      if (shouldScroll) {
+        try {
+          terminal.scrollToBottom();
+        } catch {
+          // 忽略滚动异常
+        }
+      }
       if (this.debugLoggingEnabled) {
-        this.logger(`Flushed buffer: ${bufferedData.length} chars`);
+        this.logger(`Flushed buffer: ${bufferedData.length} chars (autoScroll: ${shouldScroll})`);
       }
     } catch (error) {
       if (this.debugLoggingEnabled) {
@@ -433,18 +464,37 @@ export class PerformanceManager extends BaseManager {
   }
 
   private clearEntryTimer(entry: BufferEntry): void {
-    if (entry.timer === null) {
-      return;
+    if (entry.timer !== null) {
+      if (entry.timerType === 'raf') {
+        cancelAnimationFrame(entry.timer);
+      } else {
+        window.clearTimeout(entry.timer);
+      }
+      entry.timer = null;
+      entry.timerType = null;
     }
 
-    if (entry.timerType === 'raf') {
-      cancelAnimationFrame(entry.timer);
-    } else {
-      window.clearTimeout(entry.timer);
+    if (entry.fallbackTimer !== undefined && entry.fallbackTimer !== null) {
+      window.clearTimeout(entry.fallbackTimer);
+      entry.fallbackTimer = null;
     }
+  }
 
-    entry.timer = null;
-    entry.timerType = null;
+  /**
+   * 判断终端视口是否停留在最底部
+   * @param terminal 目标终端实例
+   * @returns 若位于最底部返回 true，允许自动跟随滚动
+   */
+  private isTerminalAtBottom(terminal: Terminal): boolean {
+    try {
+      const buffer = terminal?.buffer?.active;
+      if (!buffer) {
+        return true;
+      }
+      return Math.abs(buffer.baseY - buffer.viewportY) <= 1;
+    } catch {
+      return true;
+    }
   }
 }
 
@@ -452,4 +502,5 @@ type BufferEntry = {
   data: string[];
   timer: number | null;
   timerType: 'raf' | 'timeout' | null;
+  fallbackTimer?: number | null;
 };

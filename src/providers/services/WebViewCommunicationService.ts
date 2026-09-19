@@ -109,7 +109,7 @@ export class WebViewCommunicationService {
    */
   public async sendVersionInfo(): Promise<void> {
     try {
-      const extension = vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
+      const extension = vscode.extensions.getExtension('s-hiraoku.vscode-warp-terminal');
       const version = extension?.packageJSON?.version || 'unknown';
       const formattedVersion = version === 'unknown' ? version : `v${version}`;
 

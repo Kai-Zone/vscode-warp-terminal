@@ -127,6 +127,11 @@ export class SpecialKeysHandler {
 
     // Shift+Enter or Option/Alt+Enter: Send newline for Claude Code multiline input
     if (event.key === 'Enter' && (event.shiftKey || event.altKey || event.metaKey)) {
+      // 若当前事件目标或焦点位于 Warp 输入框或文本输入控件内，放行给输入控件自行处理换行，绝不向终端 PTY 发送换行
+      if (this.isInputElement(event)) {
+        return false;
+      }
+
       this.deps.logger(
         `${event.shiftKey ? 'Shift' : event.altKey ? 'Alt' : 'Cmd'}+Enter - sending newline for multiline input`
       );
@@ -134,6 +139,38 @@ export class SpecialKeysHandler {
       event.stopPropagation();
       this.deps.queueInputData(terminalId, '\n', true);
       return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * 判断键盘事件是否发生于文本输入框、多行文本域或 Warp 底部输入栏内
+   * 若处于输入控件内，应放行修饰键+回车（Shift/Alt+Enter），由输入框自身完成换行与文本编辑，禁止向终端 PTY 直接发送换行符
+   */
+  private isInputElement(event: KeyboardEvent): boolean {
+    const target = event.target as HTMLElement | null;
+    if (target) {
+      if (
+        target.tagName === 'TEXTAREA' ||
+        target.tagName === 'INPUT' ||
+        target.isContentEditable ||
+        (typeof target.closest === 'function' && target.closest('.warp-input-bar') !== null)
+      ) {
+        return true;
+      }
+    }
+
+    if (typeof document !== 'undefined' && document.activeElement) {
+      const active = document.activeElement as HTMLElement;
+      if (
+        active.tagName === 'TEXTAREA' ||
+        active.tagName === 'INPUT' ||
+        active.isContentEditable ||
+        (typeof active.closest === 'function' && active.closest('.warp-input-bar') !== null)
+      ) {
+        return true;
+      }
     }
 
     return false;

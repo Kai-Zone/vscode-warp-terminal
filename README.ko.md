@@ -1,11 +1,11 @@
 # Secondary Terminal - VS Code 확장
 
-[![Version](https://img.shields.io/visual-studio-marketplace/v/s-hiraoku.vscode-sidebar-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-sidebar-terminal)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/s-hiraoku.vscode-sidebar-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-sidebar-terminal)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/s-hiraoku.vscode-sidebar-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-sidebar-terminal)
-[![Open VSX](https://img.shields.io/open-vsx/v/s-hiraoku/vscode-sidebar-terminal)](https://open-vsx.org/extension/s-hiraoku/vscode-sidebar-terminal)
-[![License](https://img.shields.io/github/license/s-hiraoku/vscode-sidebar-terminal)](https://github.com/s-hiraoku/vscode-sidebar-terminal/blob/main/LICENSE)
-[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-blue?logo=github)](https://s-hiraoku.github.io/vscode-sidebar-terminal/)
+[![Version](https://img.shields.io/visual-studio-marketplace/v/s-hiraoku.vscode-warp-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-warp-terminal)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/s-hiraoku.vscode-warp-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-warp-terminal)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/s-hiraoku.vscode-warp-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-warp-terminal)
+[![Open VSX](https://img.shields.io/open-vsx/v/s-hiraoku/vscode-warp-terminal)](https://open-vsx.org/extension/s-hiraoku/vscode-warp-terminal)
+[![License](https://img.shields.io/github/license/s-hiraoku/vscode-warp-terminal)](https://github.com/s-hiraoku/vscode-warp-terminal/blob/main/LICENSE)
+[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-blue?logo=github)](https://s-hiraoku.github.io/vscode-warp-terminal/)
 
 [English](README.md) | [日本語](README.ja.md) | [中文](README.zh-CN.md) | **한국어** | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md)
 
@@ -37,7 +37,7 @@
 - **완전한 IME 지원** -- 한국어, 일본어, 중국어 입력
 - **크로스 플랫폼** -- Windows, macOS, Linux (9개 플랫폼 빌드)
 
-> **[전체 기능 문서, 키보드 단축키, 설정 참조](https://s-hiraoku.github.io/vscode-sidebar-terminal/ko/)**
+> **[전체 기능 문서, 키보드 단축키, 설정 참조](https://s-hiraoku.github.io/vscode-warp-terminal/ko/)**
 
 ## 개인정보
 
@@ -45,8 +45,8 @@ VS Code 텔레메트리 설정을 준수합니다. 터미널 내용이나 파일
 
 ## 링크
 
-- [문서](https://s-hiraoku.github.io/vscode-sidebar-terminal/ko/)
-- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-sidebar-terminal)
+- [문서](https://s-hiraoku.github.io/vscode-warp-terminal/ko/)
+- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-warp-terminal)
 - [변경 이력](CHANGELOG.md)
 
 ## 라이선스

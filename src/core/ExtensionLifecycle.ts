@@ -39,7 +39,7 @@ export class ExtensionLifecycle {
     this._extensionContext = context;
 
     const logLevel = this.configureLogger(context);
-    const extension = vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
+    const extension = vscode.extensions.getExtension('s-hiraoku.vscode-warp-terminal');
     const version = (extension?.packageJSON as { version?: string })?.version || 'unknown';
 
     logger.lifecycle('Sidebar Terminal activation started', {
@@ -51,7 +51,7 @@ export class ExtensionLifecycle {
     try {
       this.telemetryService = new TelemetryService(
         context,
-        's-hiraoku.vscode-sidebar-terminal',
+        's-hiraoku.vscode-warp-terminal',
         version
       );
     } catch (error) {

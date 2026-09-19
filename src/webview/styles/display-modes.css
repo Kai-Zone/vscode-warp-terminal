@@ -86,9 +86,9 @@
 .terminal-content {
   display: flex !important;
   flex-direction: column !important;
-  flex: 1 1 auto !important;
+  flex: 1 1 0% !important;
   width: 100% !important;
-  height: 100% !important;
+  height: auto !important;
   min-width: 0 !important;
   min-height: 0 !important;
   overflow: hidden !important;
@@ -97,6 +97,97 @@
      (padding is included in clientWidth for the parent) */
   padding: 0 4px !important;
   box-sizing: border-box !important;
+}
+
+/* 隐藏 xterm 终端内的原生游标，避免与底部输入框产生双游标混淆 */
+.terminal-container .xterm .xterm-cursor-layer {
+  display: none !important;
+}
+
+/* Warp 风格底部固定输入框样式 */
+.warp-input-bar {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  padding: 8px 12px !important;
+  background: var(--vscode-editor-background, #1e1e1e) !important;
+  border-top: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.2)) !important;
+  box-sizing: border-box !important;
+  z-index: 20 !important;
+}
+
+.warp-input-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: var(--vscode-input-background, #252526) !important;
+  border: 1px solid var(--vscode-input-border, #3c3c3c) !important;
+  border-radius: 6px !important;
+  padding: 6px 10px !important;
+  box-sizing: border-box !important;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease !important;
+}
+
+.warp-input-card:focus-within,
+.warp-input-card.focused {
+  border-color: var(--vscode-focusBorder, #007acc) !important;
+  box-shadow: 0 0 0 1px var(--vscode-focusBorder, #007acc) !important;
+}
+
+.warp-prompt-badge {
+  color: var(--vscode-terminal-ansiCyan, #4ec9b0) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  user-select: none !important;
+  flex-shrink: 0 !important;
+}
+
+.warp-input-field {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  color: var(--vscode-input-foreground, #cccccc) !important;
+  font-family: var(--vscode-editor-font-family, var(--vscode-font-family, monospace)) !important;
+  font-size: var(--vscode-editor-font-size, 13px) !important;
+  line-height: 1.4 !important;
+  caret-color: var(--vscode-focusBorder, #007acc) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.warp-input-field::placeholder {
+  color: var(--vscode-input-placeholderForeground, rgba(204, 204, 204, 0.4)) !important;
+  opacity: 1 !important;
+}
+
+.warp-run-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--vscode-foreground, #cccccc) !important;
+  opacity: 0.65 !important;
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  user-select: none !important;
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease !important;
+}
+
+.warp-run-button:hover {
+  opacity: 1 !important;
+  background-color: var(--vscode-toolbar-hoverBackground, rgba(90, 93, 94, 0.31)) !important;
 }
 
 /* ========================================

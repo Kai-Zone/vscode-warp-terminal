@@ -103,6 +103,7 @@ import { DisplayModeManager } from './DisplayModeManager';
 import { HeaderManager } from './HeaderManager';
 import { DebugPanelManager, SystemDiagnostics } from './DebugPanelManager';
 import { TerminalStateDisplayManager } from './TerminalStateDisplayManager';
+import { WarpInputBarManager } from './WarpInputBarManager';
 
 /**
  * 軽量化されたTerminalWebviewManager
@@ -158,6 +159,7 @@ export class LightweightTerminalWebviewManager implements IManagerCoordinator {
   private performanceManager!: PerformanceManager;
   private uiManager!: UIManager;
   public inputManager!: InputManager;
+  public warpInputBarManager!: WarpInputBarManager;
   public messageManager!: ConsolidatedMessageManager;
   public persistenceManager: WebViewPersistenceService | null = null;
   public webViewPersistenceService!: WebViewPersistenceService;
@@ -234,6 +236,9 @@ export class LightweightTerminalWebviewManager implements IManagerCoordinator {
 
     // FontSettingsService (単一責任: フォント設定の一元管理)
     this.fontSettingsService = new FontSettingsService();
+
+    // Warp 风格底部固定输入框管理器
+    this.warpInputBarManager = new WarpInputBarManager(this);
 
     log('✅ All managers initialized');
 
@@ -358,8 +363,12 @@ export class LightweightTerminalWebviewManager implements IManagerCoordinator {
           this.terminalLifecycleManager.getAllTerminalContainers()
         ),
       focusTerminal: (id) => {
-        const instance = this.getTerminalInstance(id);
-        instance?.terminal?.focus();
+        if (this.warpInputBarManager?.hasInputBar(id)) {
+          this.warpInputBarManager.focusInput(id);
+        } else {
+          const instance = this.getTerminalInstance(id);
+          instance?.terminal?.focus();
+        }
       },
       addTab: (id, name, terminal) => this.terminalTabManager?.addTab(id, name, terminal),
       setActiveTab: (id) => this.terminalTabManager?.setActiveTab(id),
@@ -465,6 +474,7 @@ export class LightweightTerminalWebviewManager implements IManagerCoordinator {
       uiManager: this.uiManager,
       cliAgentStateManager: this.cliAgentStateManager,
       performanceManager: this.performanceManager,
+      warpInputBarManager: this.warpInputBarManager,
       getTerminalInstance: (id) => this.getTerminalInstance(id),
       getActiveTerminalId: () => this.getActiveTerminalId(),
       setActiveTerminalId: (id) => this.setActiveTerminalId(id),
@@ -604,9 +614,14 @@ export class LightweightTerminalWebviewManager implements IManagerCoordinator {
   }
 
   public setActiveTerminalId(terminalId: string | null): void {
+    const previousActive = this.terminalLifecycleManager.getActiveTerminalId();
+    if (previousActive === terminalId) {
+      return;
+    }
+
     // 🔍 Enhanced debugging for active terminal setting
     log(`🔍 [WEBVIEW] ========== SET ACTIVE TERMINAL DEBUG ==========`);
-    log(`🔍 [WEBVIEW] Previous active: ${this.terminalLifecycleManager.getActiveTerminalId()}`);
+    log(`🔍 [WEBVIEW] Previous active: ${previousActive}`);
     log(`🔍 [WEBVIEW] New active: ${terminalId}`);
 
     this.terminalLifecycleManager.setActiveTerminalId(terminalId);
@@ -622,21 +637,26 @@ export class LightweightTerminalWebviewManager implements IManagerCoordinator {
         this.terminalLifecycleManager.getAllTerminalContainers()
       );
 
-      // 🎯 FIX: Only focus if needed to avoid interrupting terminal output
-      // This is critical for CLI agent scenarios while preserving shell prompt
-      const terminals = this.splitManager.getTerminals();
-      const terminalInstance = terminals.get(terminalId);
-      if (terminalInstance && terminalInstance.terminal) {
-        const terminal = terminalInstance.terminal;
-        // Check if terminal actually needs focus
-        if (!terminal.textarea?.hasAttribute('focused')) {
-          // Use setTimeout to avoid interrupting terminal initialization
-          setTimeout(() => {
-            terminal.focus();
-            log(`🎯 [WEBVIEW] Focused terminal when needed: ${terminalId}`);
-          }, 20);
-        } else {
-          log(`🎯 [WEBVIEW] Terminal already focused, skipping: ${terminalId}`);
+      // 🎯 若已挂载 Warp 风格底部固定输入卡片，焦点由底栏输入框接管，避免与 xterm 原生光标产生焦点争夺死循环
+      if (this.warpInputBarManager?.hasInputBar(terminalId)) {
+        this.warpInputBarManager.focusInput(terminalId);
+      } else {
+        // 🎯 FIX: Only focus if needed to avoid interrupting terminal output
+        // This is critical for CLI agent scenarios while preserving shell prompt
+        const terminals = this.splitManager.getTerminals();
+        const terminalInstance = terminals.get(terminalId);
+        if (terminalInstance && terminalInstance.terminal) {
+          const terminal = terminalInstance.terminal;
+          // Check if terminal actually needs focus
+          if (!terminal.textarea?.hasAttribute('focused')) {
+            // Use setTimeout to avoid interrupting terminal initialization
+            setTimeout(() => {
+              terminal.focus();
+              log(`🎯 [WEBVIEW] Focused terminal when needed: ${terminalId}`);
+            }, 20);
+          } else {
+            log(`🎯 [WEBVIEW] Terminal already focused, skipping: ${terminalId}`);
+          }
         }
       }
 
@@ -974,6 +994,9 @@ export class LightweightTerminalWebviewManager implements IManagerCoordinator {
 
     // 🆕 その後にWebView headerを作成（DOMが準備完了後）
     this.headerManager.createWebViewHeader();
+
+    // 🆕 Warp 底部固定输入框管理器初始化
+    this.warpInputBarManager.initialize();
 
     // 🔧 FIX: Setup parent container ResizeObserver to handle WebView resizing
     // This ensures terminals expand to full width when the panel is resized
@@ -1373,6 +1396,7 @@ export class LightweightTerminalWebviewManager implements IManagerCoordinator {
       this.terminalContainerManager?.dispose();
       this.debugPanelManager?.dispose();
       this.splitResizeManager?.dispose();
+      this.warpInputBarManager?.dispose();
 
       // 既存マネージャーのクリーンアップ
       this.messageManager.dispose();

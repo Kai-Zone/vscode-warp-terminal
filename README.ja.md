@@ -1,11 +1,11 @@
 # Secondary Terminal - VS Code 拡張機能
 
-[![Version](https://img.shields.io/visual-studio-marketplace/v/s-hiraoku.vscode-sidebar-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-sidebar-terminal)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/s-hiraoku.vscode-sidebar-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-sidebar-terminal)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/s-hiraoku.vscode-sidebar-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-sidebar-terminal)
-[![Open VSX](https://img.shields.io/open-vsx/v/s-hiraoku/vscode-sidebar-terminal)](https://open-vsx.org/extension/s-hiraoku/vscode-sidebar-terminal)
-[![License](https://img.shields.io/github/license/s-hiraoku/vscode-sidebar-terminal)](https://github.com/s-hiraoku/vscode-sidebar-terminal/blob/main/LICENSE)
-[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-blue?logo=github)](https://s-hiraoku.github.io/vscode-sidebar-terminal/)
+[![Version](https://img.shields.io/visual-studio-marketplace/v/s-hiraoku.vscode-warp-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-warp-terminal)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/s-hiraoku.vscode-warp-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-warp-terminal)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/s-hiraoku.vscode-warp-terminal)](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-warp-terminal)
+[![Open VSX](https://img.shields.io/open-vsx/v/s-hiraoku/vscode-warp-terminal)](https://open-vsx.org/extension/s-hiraoku/vscode-warp-terminal)
+[![License](https://img.shields.io/github/license/s-hiraoku/vscode-warp-terminal)](https://github.com/s-hiraoku/vscode-warp-terminal/blob/main/LICENSE)
+[![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-blue?logo=github)](https://s-hiraoku.github.io/vscode-warp-terminal/)
 
 [English](README.md) | **日本語** | [中文](README.zh-CN.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Français](README.fr.md) | [Deutsch](README.de.md)
 
@@ -25,7 +25,7 @@
 2. **開く**: アクティビティバーのターミナルアイコン（ST）をクリック
 3. **使う**: `claude`、`codex`、`gemini`、`copilot`、`agy` を実行するとAIエージェントステータスが表示
 
-[Open VSX](https://open-vsx.org/extension/s-hiraoku/vscode-sidebar-terminal) やCLI: `code --install-extension s-hiraoku.vscode-sidebar-terminal` でもインストール可能
+[Open VSX](https://open-vsx.org/extension/s-hiraoku/vscode-warp-terminal) やCLI: `code --install-extension s-hiraoku.vscode-warp-terminal` でもインストール可能
 
 ## 機能
 
@@ -40,7 +40,7 @@
 - **画像貼り付け** -- macOSで `Cmd+V` でスクリーンショットをClaude Codeに直接貼り付け
 - **クロスプラットフォーム** -- Windows、macOS、Linux（9つのプラットフォーム別ビルド）
 
-> **[全機能ドキュメント、キーボードショートカット、設定リファレンス](https://s-hiraoku.github.io/vscode-sidebar-terminal/ja/)**
+> **[全機能ドキュメント、キーボードショートカット、設定リファレンス](https://s-hiraoku.github.io/vscode-warp-terminal/ja/)**
 
 ## プライバシー
 
@@ -52,9 +52,9 @@ VS Codeのテレメトリ設定を尊重。ターミナルの内容やファイ�
 
 ## リンク
 
-- [ドキュメント](https://s-hiraoku.github.io/vscode-sidebar-terminal/ja/)
-- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-sidebar-terminal)
-- [Open VSX Registry](https://open-vsx.org/extension/s-hiraoku/vscode-sidebar-terminal)
+- [ドキュメント](https://s-hiraoku.github.io/vscode-warp-terminal/ja/)
+- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=s-hiraoku.vscode-warp-terminal)
+- [Open VSX Registry](https://open-vsx.org/extension/s-hiraoku/vscode-warp-terminal)
 - [変更履歴](CHANGELOG.md)
 
 ## ライセンス

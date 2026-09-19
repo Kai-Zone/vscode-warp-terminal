@@ -6,7 +6,9 @@ suite('Functional Test Suite', () => {
 
   suiteSetup(async () => {
     // Ensure extension is loaded and activated
-    extension = vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
+    extension =
+      vscode.extensions.getExtension('s-hiraoku.vscode-warp-terminal') ||
+      vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
 
     if (extension && !extension.isActive) {
       await extension.activate();

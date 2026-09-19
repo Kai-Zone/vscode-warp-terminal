@@ -103,7 +103,7 @@ npm run release:major        # x.0.0 bump
 git push
 
 # Step 3: Wait for CI to pass
-# Check GitHub Actions: https://github.com/s-hiraoku/vscode-sidebar-terminal/actions
+# Check GitHub Actions: https://github.com/s-hiraoku/vscode-warp-terminal/actions
 
 # Step 4: Create and push git tag ONLY after CI success
 git tag v{version}           # e.g., v0.2.29
@@ -645,8 +645,8 @@ The automated release system (`build-platform-packages.yml`) provides:
 
 #### Monitoring
 
-- View workflow status: https://github.com/s-hiraoku/vscode-sidebar-terminal/actions
-- Release dashboard: https://github.com/s-hiraoku/vscode-sidebar-terminal/releases
+- View workflow status: https://github.com/s-hiraoku/vscode-warp-terminal/actions
+- Release dashboard: https://github.com/s-hiraoku/vscode-warp-terminal/releases
 
 ## Debugging Tips
 

@@ -29,6 +29,7 @@ For detailed audit findings, see [SECURITY_AUDIT_REPORT.md](docs/SECURITY_AUDIT_
 The extension previously used `innerHTML` extensively throughout the codebase, which posed a significant XSS vulnerability risk. We have implemented a comprehensive four-phase approach to eliminate XSS vulnerabilities.
 
 **Phase 1: Audit (Completed)**
+
 - Audited all innerHTML usage locations in the codebase
 - Classified each usage by risk level:
   - **HIGH RISK**: User input or terminal output directly inserted into DOM
@@ -39,16 +40,19 @@ The extension previously used `innerHTML` extensively throughout the codebase, w
 Replaced vulnerable innerHTML patterns with safe alternatives:
 
 High-Risk Replacements:
+
 - `DOMUtils.ts`: Blocked innerHTML attribute support with warning
 - `UIController.ts`: Notification messages now use textContent + DOM construction
 - `UIManager.ts`: Notification content uses safe DOM APIs
 
 Low-Risk Replacements:
+
 - All `innerHTML = ''` changed to `textContent = ''`
 - All `innerHTML = '×'` changed to `textContent = '×'`
 - Clear operations now use textContent instead of innerHTML
 
 Medium-Risk Replacements:
+
 - Loading indicators: Use createElement + textContent
 - Debug panels: Build DOM structure with safe APIs
 - Terminal tabs: Construct using DOM elements
@@ -57,6 +61,7 @@ Medium-Risk Replacements:
 Implemented automated safeguards:
 
 ESLint Rule:
+
 ```json
 {
   "no-restricted-properties": [
@@ -71,10 +76,12 @@ ESLint Rule:
 ```
 
 DOMUtils Security:
+
 - innerHTML attribute in `DOMUtils.createElement()` now logs warning and falls back to textContent
 - Developers are guided to use safe alternatives
 
 **Phase 4: Testing (In Progress)**
+
 - TypeScript compilation verified with no errors
 - ESLint rules active to prevent future innerHTML usage
 - XSS test suite to be implemented in future PR
@@ -84,11 +91,13 @@ DOMUtils Security:
 When building UI elements, always use these safe patterns:
 
 ✅ **SAFE: Using textContent**
+
 ```typescript
 element.textContent = userInput; // Automatically escapes HTML
 ```
 
 ✅ **SAFE: Building DOM with createElement**
+
 ```typescript
 const div = document.createElement('div');
 div.className = 'message';
@@ -100,9 +109,10 @@ div.appendChild(span);
 ```
 
 ✅ **SAFE: Using DocumentFragment**
+
 ```typescript
 const fragment = document.createDocumentFragment();
-items.forEach(item => {
+items.forEach((item) => {
   const li = document.createElement('li');
   li.textContent = item.name; // Safe
   fragment.appendChild(li);
@@ -111,6 +121,7 @@ container.appendChild(fragment);
 ```
 
 ❌ **UNSAFE: Using innerHTML with user input**
+
 ```typescript
 element.innerHTML = userInput; // XSS RISK!
 element.innerHTML = `<div>${terminalOutput}</div>`; // XSS RISK!
@@ -120,17 +131,18 @@ element.innerHTML = `<div>${terminalOutput}</div>`; // XSS RISK!
 
 The following files still contain innerHTML for fixed HTML templates:
 
-| File | Occurrences | Risk Level |
-|------|-------------|------------|
-| `src/webview/components/ProfileSelector.ts` | 3 | Low (uses _escapeHtml) |
-| `src/webview/components/TerminalTabList.ts` | 3 | Low (fixed templates) |
-| `src/webview/utils/DOMUtils.ts` | 3 | Low (utility with warnings) |
-| `src/webview/components/SettingsPanel.ts` | 1 | Low (fixed template) |
-| `src/webview/managers/handlers/ShellIntegrationMessageHandler.ts` | 1 | Low (system info) |
-| `src/webview/services/terminal/TerminalScrollIndicatorService.ts` | 1 | Low (fixed template) |
-| `src/webview/managers/DebugPanelManager.ts` | 1 | Low (debug only) |
+| File                                                              | Occurrences | Risk Level                  |
+| ----------------------------------------------------------------- | ----------- | --------------------------- |
+| `src/webview/components/ProfileSelector.ts`                       | 3           | Low (uses _escapeHtml)      |
+| `src/webview/components/TerminalTabList.ts`                       | 3           | Low (fixed templates)       |
+| `src/webview/utils/DOMUtils.ts`                                   | 3           | Low (utility with warnings) |
+| `src/webview/components/SettingsPanel.ts`                         | 1           | Low (fixed template)        |
+| `src/webview/managers/handlers/ShellIntegrationMessageHandler.ts` | 1           | Low (system info)           |
+| `src/webview/services/terminal/TerminalScrollIndicatorService.ts` | 1           | Low (fixed template)        |
+| `src/webview/managers/DebugPanelManager.ts`                       | 1           | Low (debug only)            |
 
 These are lower priority as they use:
+
 1. Fixed HTML templates (no user input)
 2. HTML escape functions (_escapeHtml)
 3. System information only
@@ -146,11 +158,11 @@ We provide security updates for the following versions:
 | 0.1.x   | :white_check_mark: |
 | < 0.1.0 | :x:                |
 
-We recommend always using the latest version of vscode-sidebar-terminal to ensure you have all security updates.
+We recommend always using the latest version of vscode-warp-terminal to ensure you have all security updates.
 
 ## Reporting a Vulnerability
 
-We take the security of vscode-sidebar-terminal seriously. If you believe you have found a security vulnerability, please report it responsibly.
+We take the security of vscode-warp-terminal seriously. If you believe you have found a security vulnerability, please report it responsibly.
 
 ### How to Report
 
@@ -159,7 +171,7 @@ We take the security of vscode-sidebar-terminal seriously. If you believe you ha
 Instead, please report them via one of the following methods:
 
 1. **GitHub Security Advisories** (Preferred)
-   - Go to the [Security Advisories](https://github.com/s-hiraoku/vscode-sidebar-terminal/security/advisories) page
+   - Go to the [Security Advisories](https://github.com/s-hiraoku/vscode-warp-terminal/security/advisories) page
    - Click "Report a vulnerability"
    - Fill out the form with details about the vulnerability
 
@@ -239,7 +251,7 @@ export class CredentialService {
 }
 
 // ❌ INCORRECT: Never do this
-const API_KEY = "sk-1234567890abcdef"; // Hardcoded credential
+const API_KEY = 'sk-1234567890abcdef'; // Hardcoded credential
 ```
 
 ## Security Scanning
@@ -297,41 +309,51 @@ npm install --save-dev husky lint-staged @secretlint/secretlint-rule-preset-reco
 ### For Developers and Contributors
 
 #### 1. Never Commit Credentials
+
 - API keys, passwords, tokens, or secrets
 - Use `.env` files (already gitignored)
 - Use environment variables for local testing
 
 #### 2. Use VS Code SecretStorage API
+
 - For any credential storage needs
 - Never use workspace configuration
 
 #### 3. Prevent XSS Vulnerabilities
+
 - Never use `innerHTML` (ESLint will block it)
 - Use `textContent` or safe DOM APIs
 - Validate and sanitize all user input
 
 #### 4. Review Code for Security Issues
+
 - Check for hardcoded credentials
 - Validate input from external sources
 - Avoid `eval()` and similar dangerous functions
 
 #### 5. Keep Dependencies Updated
+
 - Run `npm audit` regularly
 - Update packages with known vulnerabilities
 
 #### 6. Input Validation
+
 - Always validate and sanitize user input before processing
 - Use TypeScript types to enforce expected data shapes
 - Never trust terminal output or external data sources
 
 #### 7. Content Security Policy (CSP)
+
 The extension uses VS Code's WebView CSP to restrict:
+
 - Script sources to trusted origins only
 - No inline script execution
 - Restricted style sources
 
 #### 8. Code Review Guidelines
+
 When reviewing PRs, check for:
+
 - Use of innerHTML (should trigger ESLint error)
 - Direct DOM manipulation without sanitization
 - User input being inserted into HTML attributes
@@ -340,7 +362,7 @@ When reviewing PRs, check for:
 
 ### For Users
 
-When using vscode-sidebar-terminal, we recommend:
+When using vscode-warp-terminal, we recommend:
 
 1. **Keep Updated**: Always use the latest version of the extension
 2. **Install Security Updates Promptly**: Enable automatic updates in VS Code
@@ -394,6 +416,7 @@ secrets.json
 ⚠️ **Risk**: This extension creates terminals that can execute arbitrary commands.
 
 **Mitigations**:
+
 - All commands are user-initiated
 - No automatic command execution
 - Clear visual feedback for command execution
@@ -405,6 +428,7 @@ secrets.json
 ### GitHub Actions Secrets
 
 ✅ **Properly Managed**: We use GitHub Secrets for:
+
 - `VSCE_PAT`: VS Code marketplace publishing
 - `CODECOV_TOKEN`: Code coverage reporting
 - `SNYK_TOKEN`: Security scanning
@@ -431,6 +455,7 @@ Users will be notified of security updates through:
 ### OWASP Top 10
 
 This extension has been audited against:
+
 - **A07:2021 – Identification and Authentication Failures**: ✅ PASS (Issue #230)
 - **A03:2021 – Injection (XSS)**: ✅ MITIGATED (Issue #229)
 - **A02:2021 – Cryptographic Failures**: N/A (No cryptographic operations)
@@ -438,6 +463,7 @@ This extension has been audited against:
 ## Security Contact
 
 For security concerns, please contact:
+
 - **GitHub Issues**: For non-sensitive security improvements
 - **Email**: [Project maintainer email] for vulnerability reports
 - **Security Advisories**: Use GitHub's "Report a vulnerability" feature
@@ -459,6 +485,7 @@ We appreciate responsible disclosure and will acknowledge security researchers w
 ## Updates to This Policy
 
 This security policy is reviewed and updated:
+
 - After each security audit
 - When new features are added
 - In response to security incidents
@@ -467,10 +494,12 @@ This security policy is reviewed and updated:
 ## Changelog
 
 ### 2025-12-24
+
 - Updated innerHTML remaining files list (removed non-existent file, added missing files)
 - Changed "Version" to "Document Version" for clarity
 
 ### 2025-11-12
+
 - Comprehensive credential handling audit completed (Issue #230)
 - XSS vulnerability remediation completed for high/low risk areas (Issue #229)
 - Comprehensive security scanning enabled in CI (Issue #233)

@@ -5,7 +5,9 @@ suite('Extension Test Suite', () => {
   void vscode.window.showInformationMessage('Start all tests.');
 
   test('Extension should be present', () => {
-    const extension = vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
+    const extension =
+      vscode.extensions.getExtension('s-hiraoku.vscode-warp-terminal') ||
+      vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
     assert.ok(extension);
   });
 
@@ -19,7 +21,9 @@ suite('Extension Test Suite', () => {
   });
 
   test('Should activate extension', async () => {
-    const extension = vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
+    const extension =
+      vscode.extensions.getExtension('s-hiraoku.vscode-warp-terminal') ||
+      vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
     assert.ok(extension);
 
     if (extension && !extension.isActive) {

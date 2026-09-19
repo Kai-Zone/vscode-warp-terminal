@@ -131,6 +131,7 @@ export class TerminalFocusService {
       if (target.closest('.terminal-control')) return;
       if (target.closest('.terminal-header')) return;
       if (target.closest('.terminal-name-edit-input')) return;
+      if (target.closest('.warp-input-bar')) return;
 
       this.ensureTerminalFocus(terminal, terminalId, terminalContent);
     });

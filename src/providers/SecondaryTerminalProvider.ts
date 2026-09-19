@@ -735,7 +735,7 @@ export class SecondaryTerminalProvider implements vscode.WebviewViewProvider, vs
     log('⚙️ [PROVIDER] Opening settings...');
     void vscode.commands.executeCommand(
       'workbench.action.openSettings',
-      '@ext:s-hiraoku.vscode-sidebar-terminal'
+      '@ext:s-hiraoku.vscode-warp-terminal'
     );
   }
 

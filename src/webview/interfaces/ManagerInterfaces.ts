@@ -132,6 +132,7 @@ export interface IManagerCoordinator {
   findInTerminalManager?: IFindInTerminalManager; // Find in Terminal manager
   profileManager?: IProfileManager; // Profile manager
   inputManager?: IInputManager; // Input management for terminal events
+  warpInputBarManager?: IWarpInputBarManager; // Warp-style docked input bar manager
   getManagers(): {
     performance: IPerformanceManager;
     input: IInputManager;
@@ -279,6 +280,29 @@ export interface IInputManager {
   setPanelNavigationMode?(enabled: boolean): void;
   setPanelNavigationEnabled?(enabled: boolean): void;
   setAgentInteractionMode?(enabled: boolean): void;
+  dispose(): void;
+}
+
+/**
+ * Warp 风格底部固定输入栏管理器接口
+ * 负责在终端视口最底部提供仿 Warp 的独立命令输入卡片并派发执行
+ */
+export interface IWarpInputBarManager {
+  /** 判断指定终端是否已挂载底部输入栏 */
+  hasInputBar(terminalId: string): boolean;
+  /** 为指定终端挂载底部输入栏 */
+  attachTerminal(terminalId: string): void;
+  /** 解绑并销毁指定终端的底部输入栏 */
+  detachTerminal(terminalId: string): void;
+  /** 聚焦指定终端的输入栏 */
+  focusInput(terminalId: string): void;
+  /** 获取指定终端的命令历史记录 */
+  getHistory(terminalId: string): string[];
+  /** 获取指定终端输入 DOM 元素 */
+  getInputElement(terminalId: string): HTMLTextAreaElement | HTMLInputElement | undefined;
+  /** 重新适配终端视口尺寸并向后端 PTY 发送 resize 消息以对齐行数 */
+  refitAndSyncTerminal?(terminalId: string): void;
+  /** 释放所有监听与清理 DOM */
   dispose(): void;
 }
 

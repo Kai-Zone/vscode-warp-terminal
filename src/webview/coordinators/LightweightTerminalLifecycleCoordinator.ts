@@ -67,6 +67,10 @@ export interface IDependencies {
   uiManager?: IUIManager;
   cliAgentStateManager: ICliAgentStateManager;
   performanceManager?: IPerformanceManager;
+  warpInputBarManager?: {
+    hasInputBar(terminalId: string): boolean;
+    focusInput(terminalId: string): void;
+  };
   getTerminalInstance(terminalId: string): { terminal?: Terminal } | undefined;
   getActiveTerminalId(): string | null;
   setActiveTerminalId(terminalId: string | null): void;
@@ -225,6 +229,12 @@ export class LightweightTerminalLifecycleCoordinator {
 
     if (terminalId && this.dependencies.getActiveTerminalId() !== terminalId) {
       this.dependencies.setActiveTerminalId(terminalId);
+    }
+
+    // 若当前终端已挂载 Warp 风格底部输入框，则优先聚焦输入框；否则回退原生 xterm 聚焦
+    if (this.dependencies.warpInputBarManager?.hasInputBar(targetTerminalId)) {
+      this.dependencies.warpInputBarManager.focusInput(targetTerminalId);
+      return;
     }
 
     instance.terminal.focus();

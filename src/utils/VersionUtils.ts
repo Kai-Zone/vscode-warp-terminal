@@ -17,7 +17,7 @@ export class VersionUtils {
 
     try {
       // 拡張機能のマニフェスト（package.json）からバージョンを取得
-      const extension = vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
+      const extension = vscode.extensions.getExtension('s-hiraoku.vscode-warp-terminal');
       if (extension?.packageJSON?.version) {
         this.cachedVersion = extension.packageJSON.version as string;
         return this.cachedVersion;
@@ -47,7 +47,7 @@ export class VersionUtils {
    */
   public static getExtensionDisplayInfo(): string {
     try {
-      const extension = vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
+      const extension = vscode.extensions.getExtension('s-hiraoku.vscode-warp-terminal');
       if (extension?.packageJSON) {
         const displayName = extension.packageJSON.displayName || 'Secondary Terminal';
         const version = this.getFormattedVersion();

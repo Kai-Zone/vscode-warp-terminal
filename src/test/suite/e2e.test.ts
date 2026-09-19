@@ -9,7 +9,9 @@ suite('E2E Test Suite', () => {
     this.timeout(5000);
 
     // Wait for extension to activate
-    extension = vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
+    extension =
+      vscode.extensions.getExtension('s-hiraoku.vscode-warp-terminal') ||
+      vscode.extensions.getExtension('s-hiraoku.vscode-sidebar-terminal');
     if (extension && !extension.isActive) {
       await extension.activate();
     }

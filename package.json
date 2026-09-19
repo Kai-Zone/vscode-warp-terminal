@@ -1,5 +1,5 @@
 {
-  "name": "vscode-sidebar-terminal",
+  "name": "vscode-warp-terminal",
   "displayName": "Secondary Terminal",
   "description": "Sidebar terminal for VS Code with AI agent awareness (Claude Code, Copilot, Gemini, Codex, Antigravity), split views, session persistence, and full IME support.",
   "version": "1.2.0",
@@ -32,14 +32,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/s-hiraoku/vscode-sidebar-terminal"
+    "url": "https://github.com/Kai-Zone/vscode-warp-terminal"
   },
   "bugs": {
-    "url": "https://github.com/s-hiraoku/vscode-sidebar-terminal/issues"
+    "url": "https://github.com/Kai-Zone/vscode-warp-terminal/issues"
   },
-  "homepage": "https://s-hiraoku.github.io/vscode-sidebar-terminal/",
+  "homepage": "https://github.com/Kai-Zone/vscode-warp-terminal#readme",
   "license": "MIT",
-  "qna": "https://github.com/s-hiraoku/vscode-sidebar-terminal/discussions",
+  "qna": "https://github.com/Kai-Zone/vscode-warp-terminal/discussions",
   "preview": false,
   "main": "./dist/extension.js",
   "activationEvents": [

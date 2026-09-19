@@ -38,6 +38,7 @@ export interface IDependencies {
     | 'getActiveTerminalId'
   > & {
     inputManager?: IManagerCoordinator['inputManager'];
+    warpInputBarManager?: IManagerCoordinator['warpInputBarManager'];
   };
   linkManager: TerminalLinkManager;
   scrollbarService: TerminalScrollbarService;
@@ -160,6 +161,9 @@ export class TerminalLifecycleService {
       terminalLogger.info(`✅ Container registered with TerminalContainerManager: ${terminalId}`);
     }
 
+    // Warp 风格底部固定输入框支持：绑定新终端
+    this.dependencies.coordinator.warpInputBarManager?.attachTerminal(terminalId);
+
     const displayModeOverride = (config as { displayModeOverride?: string } | undefined)
       ?.displayModeOverride;
     if (
@@ -222,6 +226,7 @@ export class TerminalLifecycleService {
       }
 
       this.dependencies.mouseTrackingService.cleanup(terminalId);
+      this.dependencies.coordinator.warpInputBarManager?.detachTerminal(terminalId);
       this.dependencies.lifecycleController.disposeTerminal(terminalId);
       this.dependencies.eventManager.removeTerminalEvents(terminalId);
 

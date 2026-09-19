@@ -242,7 +242,26 @@ export class TerminalLifecycleMessageHandler implements IMessageHandler {
         existingTerminals: Array.from(coordinator.getAllTerminalInstances().keys()),
       });
 
-      this.outputGates.set(terminalId, { enabled: false, buffer: [] });
+      const gate = { enabled: false, buffer: [] };
+      this.outputGates.set(terminalId, gate);
+
+      // 🛡️ 安全放行兜底：若扩展端由于 IPC 通信拥堵或异常未能在 600ms 内送达 startOutput 确认，
+      // 主动解除输出拦截并排空缓冲区，彻底杜绝输出被无限期阻塞导致"很长时间不显示/突然全部吐出来"的假死现象
+      setTimeout(() => {
+        const currentGate = this.outputGates.get(terminalId);
+        if (currentGate && !currentGate.enabled) {
+          currentGate.enabled = true;
+          this.logger.warn(
+            `⏰ [OUTPUT-GATE] Safety fallback timer expired for ${terminalId}, automatically opening gate (${currentGate.buffer.length} chunks)`
+          );
+          while (currentGate.buffer.length > 0) {
+            const chunk = currentGate.buffer.shift();
+            if (chunk) {
+              this.writeOutputToTerminal(terminalId, chunk, coordinator);
+            }
+          }
+        }
+      }, 600);
 
       if (result) {
         this.scheduleInitializationAck(terminalId, coordinator);
@@ -688,10 +707,19 @@ export class TerminalLifecycleMessageHandler implements IMessageHandler {
     return TerminalLifecycleMessageHandler.SUPPORTED_AGENT_TYPES.has(agentType);
   }
 
+  /**
+   * 获取或创建指定终端的输出控制闸门
+   *
+   * 设计决策：默认创建 enabled: true 的闸门。
+   * 只有 handleTerminalCreated 中显式创建的 gate 才为 enabled: false（等待握手 startOutput）。
+   * 若终端已完成初始化流程（gate 被清除后又因新输出重建），默认放行输出。
+   * 原先默认 enabled: false 会导致已运行终端在 gate 缺失时所有输出被永久缓冲，
+   * 表现为"命令能执行但输出要等很长时间甚至不显示"的致命延迟。
+   */
   private ensureOutputGate(terminalId: string): { enabled: boolean; buffer: string[] } {
     let gate = this.outputGates.get(terminalId);
     if (!gate) {
-      gate = { enabled: false, buffer: [] };
+      gate = { enabled: true, buffer: [] };
       this.outputGates.set(terminalId, gate);
     }
     return gate;

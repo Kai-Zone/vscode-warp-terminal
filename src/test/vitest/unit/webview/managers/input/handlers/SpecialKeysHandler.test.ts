@@ -227,6 +227,57 @@ describe('SpecialKeysHandler', () => {
       expect(result).toBe(true);
       expect(mockDeps.queueInputData).toHaveBeenCalledWith('terminal-1', '\n', true);
     });
+
+    it('当事件目标为 textarea 或处于 warp-input-bar 时，Shift+Enter 不应被拦截并不向终端发送换行', () => {
+      const warpBar = dom.window.document.createElement('div');
+      warpBar.className = 'warp-input-bar';
+      const textarea = dom.window.document.createElement('textarea');
+      textarea.className = 'warp-input-field';
+      warpBar.appendChild(textarea);
+      dom.window.document.body.appendChild(warpBar);
+
+      const event = new dom.window.KeyboardEvent('keydown', {
+        key: 'Enter',
+        shiftKey: true,
+        bubbles: true,
+        cancelable: true,
+      });
+      Object.defineProperty(event, 'target', { value: textarea, configurable: true });
+
+      const preventSpy = vi.spyOn(event, 'preventDefault');
+      const stopSpy = vi.spyOn(event, 'stopPropagation');
+      const manager = {} as any;
+
+      const result = handler.handleSpecialKeys(event, 'terminal-1', manager);
+      // 应放行给输入框自行处理，不应调用 preventDefault、stopPropagation 或发送换行
+      expect(result).toBe(false);
+      expect(preventSpy).not.toHaveBeenCalled();
+      expect(stopSpy).not.toHaveBeenCalled();
+      expect(mockDeps.queueInputData).not.toHaveBeenCalled();
+    });
+
+    it('当 activeElement 为 textarea 或处于 warp-input-bar 时，Alt+Enter 不应被拦截并不向终端发送换行', () => {
+      const warpBar = dom.window.document.createElement('div');
+      warpBar.className = 'warp-input-bar';
+      const textarea = dom.window.document.createElement('textarea');
+      textarea.className = 'warp-input-field';
+      warpBar.appendChild(textarea);
+      dom.window.document.body.appendChild(warpBar);
+
+      textarea.focus();
+
+      const event = new dom.window.KeyboardEvent('keydown', {
+        key: 'Enter',
+        altKey: true,
+        bubbles: true,
+        cancelable: true,
+      });
+
+      const manager = {} as any;
+      const result = handler.handleSpecialKeys(event, 'terminal-1', manager);
+      expect(result).toBe(false);
+      expect(mockDeps.queueInputData).not.toHaveBeenCalled();
+    });
   });
 
   describe('Unhandled keys', () => {

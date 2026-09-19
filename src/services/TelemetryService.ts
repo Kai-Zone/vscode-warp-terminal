@@ -88,7 +88,7 @@ export class TelemetryService {
 
   constructor(
     context: vscode.ExtensionContext,
-    extensionId: string = 'vscode-sidebar-terminal',
+    extensionId: string = 'vscode-warp-terminal',
     extensionVersion: string = '0.1.138'
   ) {
     this.extensionId = extensionId;
